@@ -20,22 +20,19 @@
         android:roundIcon="@drawable/notification_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginInfo">
+        <activity android:name=".LoginInfoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-
-                <action android:name="android.net.conn.CAPTIVE_PORTAL" />
-
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <service
             android:name=".NotificationService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <receiver android:name=".CaptivePortalReceiver"></receiver>
     </application>
 
 </manifest>

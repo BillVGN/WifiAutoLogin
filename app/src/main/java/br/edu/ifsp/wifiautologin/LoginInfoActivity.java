@@ -1,6 +1,8 @@
 package br.edu.ifsp.wifiautologin;
 
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -25,13 +27,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginInfo extends AppCompatActivity {
+public class LoginInfoActivity extends AppCompatActivity {
 
     private TextView inputUser = null;
     private TextView inputPassword = null;
     private TextView textResponse = null;
     private Document doc = null;
     private static String PREFS_NAME = "walprefs";
+
+    private CaptivePortalReceiver cpreceiver = new CaptivePortalReceiver();
 
     private View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
@@ -150,8 +154,11 @@ public class LoginInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_info);
 
-
         assignViewListeners();
         readSettings();
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN);
+        cpreceiver = new CaptivePortalReceiver();
+        registerReceiver(cpreceiver, filter);
     }
 }
