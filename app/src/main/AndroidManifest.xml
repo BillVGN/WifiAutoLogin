@@ -27,12 +27,12 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".NotificationService"
-            android:enabled="true"
-            android:exported="true" />
-
-        <receiver android:name=".CaptivePortalReceiver"></receiver>
+        <receiver android:name=".CaptivePortalReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CAPTIVE_PORTAL" />
+                <action android:name="android.net.wifi.supplicant.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

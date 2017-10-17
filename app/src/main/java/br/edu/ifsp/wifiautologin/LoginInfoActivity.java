@@ -156,9 +156,5 @@ public class LoginInfoActivity extends AppCompatActivity {
 
         assignViewListeners();
         readSettings();
-
-        IntentFilter filter = new IntentFilter(ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN);
-        cpreceiver = new CaptivePortalReceiver();
-        registerReceiver(cpreceiver, filter);
     }
 }
