@@ -24,6 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,11 +103,7 @@ public class LoginInfoActivity extends AppCompatActivity {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse response) {
                 String parsed;
-                try {
-                    parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                } catch (UnsupportedEncodingException e) {
-                    parsed = new String(response.data);
-                }
+                parsed = new String(response.data, Charset.defaultCharset());
                 return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
             }
         };

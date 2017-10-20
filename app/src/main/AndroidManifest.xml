@@ -30,7 +30,7 @@
         <receiver android:name=".CaptivePortalReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CAPTIVE_PORTAL" />
-                <action android:name="android.net.wifi.supplicant.STATE_CHANGE" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
     </application>
