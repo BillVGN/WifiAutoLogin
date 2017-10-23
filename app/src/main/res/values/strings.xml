@@ -17,4 +17,7 @@
     <string name="notification_text_executed">Executed</string>
     <string name="Button_PostRequest_label">Send Post Request</string>
     <string name="PostRequest_Not_Enough_Parameters">Fail! Not all parameters are set</string>
+    <string name="Login_Service_Stopped">Login Service has stopped</string>
+    <string name="Login_Service_Started">Login Service has started</string>
+    <string name="Login_Service_Label">Login Service</string>
 </resources>
