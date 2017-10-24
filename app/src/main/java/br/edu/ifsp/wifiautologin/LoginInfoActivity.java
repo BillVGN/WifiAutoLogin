@@ -1,5 +1,6 @@
 package br.edu.ifsp.wifiautologin;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -153,5 +155,8 @@ public class LoginInfoActivity extends AppCompatActivity {
 
         assignViewListeners();
         readSettings();
+//        Intent loginService = new Intent(this, LoginService.class);
+//        Toast.makeText(this, "Iniciando Serviço!", Toast.LENGTH_LONG).show();
+//        startService(loginService);
     }
 }

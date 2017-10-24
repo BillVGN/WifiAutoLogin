@@ -1,13 +1,16 @@
 package br.edu.ifsp.wifiautologin;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -68,13 +71,13 @@ public final class PostRequest {
     };
 
     public PostRequest() {
-        initResources();
+        resources = WifiAutoLogin.getContext().getResources();
 
         mUrl = resources.getString(R.string.Login_url);
     }
 
     public PostRequest(String userName, String userPass) {
-        initResources();
+        resources = WifiAutoLogin.getContext().getResources();
 
         mUserName = userName;
         mUserPass = userPass;
@@ -82,7 +85,7 @@ public final class PostRequest {
     }
 
     public PostRequest(String userName, String userPass, OnResponseReceivedListener listener) {
-        initResources();
+        resources = WifiAutoLogin.getContext().getResources();
 
         mUserName = userName;
         mUserPass = userPass;
@@ -90,42 +93,42 @@ public final class PostRequest {
         responseReceivedListener = listener;
     }
 
-    private void initResources() {
-        resources = Resources.getSystem();
-    }
-
     public String getUserName() {
         return mUserName;
     }
 
-    public void setUserName(String userName) {
+    public PostRequest setUserName(String userName) {
         mUserName = userName;
+        return this;
     }
 
     public String getUserPass() {
         return mUserPass;
     }
 
-    public void setUserPass(String userPass) {
+    public PostRequest setUserPass(String userPass) {
         mUserPass = userPass;
+        return this;
     }
 
     public String getLastResponse() {
         return mResponse;
     }
 
-    private void setResponse(String response) {
+    private PostRequest setResponse(String response) {
         mResponse = response;
         // Dispara o evento onResponseReceived com a resposta para alertar a View
         responseReceivedListener.onResponseReceived(mResponse);
+        return this;
     }
 
     public interface OnResponseReceivedListener {
         void onResponseReceived(String response);
     }
 
-    public void setOnResponseReceivedListener(OnResponseReceivedListener listener) {
+    public PostRequest setOnResponseReceivedListener(OnResponseReceivedListener listener) {
         responseReceivedListener = listener;
+        return this;
     }
 
     private class CustomStringRequest extends StringRequest {
@@ -162,13 +165,19 @@ public final class PostRequest {
             return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
         }
 
-        public void sendPost() {
-            if (mUserName == null || mUserPass == null) {
-                setResponse(resources.getString(R.string.PostRequest_Not_Enough_Parameters));
-                return;
-            }
+    }
 
-            CustomStringRequest customStringRequest = new CustomStringRequest(Method.POST, mUrl, rListener, rErrorListener);
+    public void sendPost(Context context) {
+        if (mUserName == null || mUserPass == null) {
+            setResponse(resources.getString(R.string.PostRequest_Not_Enough_Parameters));
+            return;
         }
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        CustomStringRequest customStringRequest =
+                new CustomStringRequest(CustomStringRequest.Method.POST, mUrl, rListener, rErrorListener);
+
+        queue.add(customStringRequest);
     }
 }

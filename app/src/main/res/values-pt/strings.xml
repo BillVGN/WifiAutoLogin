@@ -17,4 +17,5 @@
     <string name="Login_Service_Stopped">Login Service parou</string>
     <string name="Login_Service_Started">Login Service iniciou</string>
     <string name="Login_Service_Label">Login Service</string>
+    <string name="Login_Service_Processing">Login Service Processando</string>
 </resources>
