@@ -11,6 +11,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class LoginService extends Service {
+    private static final String TAG = "LoginService";
+
     private CharSequence texto;
 
     private PendingIntent contentIntent;
@@ -41,37 +43,30 @@ public class LoginService extends Service {
     }
 
     private void loginCaptivePortal() {
-        PostRequest postRequest = new PostRequest(
-                "sp080652",
-                "wmctr4b41#0",
-                mRRListener
-        );
-
-        postRequest.sendPost(this);
+        try {
+            PostRequest postRequest = new PostRequest("sp080652", "wmctr4b41#0", mRRListener);
+            postRequest.sendPost();
+        } catch (Exception e) {
+            Log.d(TAG, "Erro no login do portal cativo: " + e.getLocalizedMessage(), e);
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, getClass().getName() + ": Criando notificação", Toast.LENGTH_LONG).show();
+        try {
+            createNotification();
+        } catch (Exception e) {
+            Log.d(TAG, "Erro ao criar a notificação: " + e.getLocalizedMessage(), e);
+        }
+        loginCaptivePortal();
 
-        createNotification();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                loginCaptivePortal();
-            }
-        }).start();
-
-
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
         NotificationManager nM = getSystemService(NotificationManager.class);
         nM.cancel(NOTIFICATION);
-
-        Toast.makeText(this, R.string.Login_Service_Stopped, Toast.LENGTH_LONG).show();
     }
 
     private void createNotification() {

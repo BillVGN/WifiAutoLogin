@@ -39,6 +39,8 @@ public final class PostRequest {
 
     private Document mDocument = null;
 
+    private RequestQueue queue = null;
+
     private OnResponseReceivedListener responseReceivedListener = null;
 
     protected Response.Listener<String> rListener = new Response.Listener<String>() {
@@ -167,17 +169,23 @@ public final class PostRequest {
 
     }
 
-    public void sendPost(Context context) {
+    public void sendPost() {
         if (mUserName == null || mUserPass == null) {
             setResponse(resources.getString(R.string.PostRequest_Not_Enough_Parameters));
             return;
         }
 
-        RequestQueue queue = Volley.newRequestQueue(context);
-
         CustomStringRequest customStringRequest =
                 new CustomStringRequest(CustomStringRequest.Method.POST, mUrl, rListener, rErrorListener);
 
-        queue.add(customStringRequest);
+        getRequestQueue().add(customStringRequest);
+    }
+
+    private RequestQueue getRequestQueue() {
+        if (queue == null) {
+            queue = Volley.newRequestQueue(WifiAutoLogin.getContext());
+        }
+
+        return queue;
     }
 }

@@ -24,21 +24,28 @@
         <activity android:name=".LoginInfoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.net.conn.CAPTIVE_PORTAL" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!--
         <receiver android:name=".CaptivePortalReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
+        -->
 
         <service
             android:name=".LoginService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".CaptivePortalActivity">
+            <intent-filter>
+                <action android:name="android.net.conn.CAPTIVE_PORTAL" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

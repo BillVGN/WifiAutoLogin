@@ -1,14 +1,10 @@
 package br.edu.ifsp.wifiautologin;
 
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -25,7 +21,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +78,7 @@ public class LoginInfoActivity extends AppCompatActivity {
                 }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
 
                 params.put("login", login);
                 params.put("password", password);
@@ -109,7 +104,7 @@ public class LoginInfoActivity extends AppCompatActivity {
                 return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
             }
         };
-        // Sério que havia esquecido de adicionar a request à fila?
+
         queue.add(stringRequest);
     }
 

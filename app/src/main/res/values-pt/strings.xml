@@ -18,4 +18,5 @@
     <string name="Login_Service_Started">Login Service iniciou</string>
     <string name="Login_Service_Label">Login Service</string>
     <string name="Login_Service_Processing">Login Service Processando</string>
+    <string name="Captive_Portal_Welcome">Fui chamado!</string>
 </resources>
