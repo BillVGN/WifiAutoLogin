@@ -1,6 +1,5 @@
 package br.edu.ifsp.wifiautologin;
 
-import android.content.Context;
 import android.content.res.Resources;
 
 import com.android.volley.AuthFailureError;
@@ -21,10 +20,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by willian on 20/10/17.
- */
-
 public final class PostRequest {
 
     private Resources resources = null;
@@ -43,7 +38,7 @@ public final class PostRequest {
 
     private OnResponseReceivedListener responseReceivedListener = null;
 
-    protected Response.Listener<String> rListener = new Response.Listener<String>() {
+    private Response.Listener<String> rListener = new Response.Listener<String>() {
         @Override
         public void onResponse(String response) {
             setResponse(resources.getString(R.string.Progress_Status_connecting) + "\n");
@@ -52,10 +47,11 @@ public final class PostRequest {
             if (errors.isEmpty()) {
                 Elements table_trs = mDocument.select("table.ss_table tr");
                 StringBuilder sb = new StringBuilder(255);
-                Element td = null;
+                Element td;
                 for (Element tr : table_trs) {
                     td = tr.children().first();
-                    sb.append(td.text() + td.nextElementSibling().text());
+                    sb.append(td.text());
+                    sb.append(td.nextElementSibling().text());
                     sb.append("\n");
                 }
                 setResponse(sb.toString());
@@ -65,7 +61,7 @@ public final class PostRequest {
         }
     };
 
-    protected Response.ErrorListener rErrorListener = new Response.ErrorListener() {
+    private Response.ErrorListener rErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             setResponse(error.getLocalizedMessage());
@@ -86,7 +82,7 @@ public final class PostRequest {
         mUrl = resources.getString(R.string.Login_url);
     }
 
-    public PostRequest(String userName, String userPass, OnResponseReceivedListener listener) {
+    PostRequest(String userName, String userPass, OnResponseReceivedListener listener) {
         resources = WifiAutoLogin.getContext().getResources();
 
         mUserName = userName;
@@ -113,15 +109,14 @@ public final class PostRequest {
         return this;
     }
 
-    public String getLastResponse() {
+    private String getLastResponse() {
         return mResponse;
     }
 
-    private PostRequest setResponse(String response) {
+    private void setResponse(String response) {
         mResponse = response;
         // Dispara o evento onResponseReceived com a resposta para alertar a View
         responseReceivedListener.onResponseReceived(mResponse);
-        return this;
     }
 
     public interface OnResponseReceivedListener {
@@ -135,13 +130,13 @@ public final class PostRequest {
 
     private class CustomStringRequest extends StringRequest {
 
-        public CustomStringRequest(int method, String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        CustomStringRequest(int method, String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
             super(method, url, listener, errorListener);
         }
 
         @Override
         protected Map<String, String> getParams() throws AuthFailureError {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
 
             params.put("login", mUserName);
             params.put("password", mUserPass);
@@ -151,7 +146,7 @@ public final class PostRequest {
 
         @Override
         public Map<String, String> getHeaders() throws AuthFailureError {
-            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, String> headers = new HashMap<>();
 
             headers.put("Accept", "text/html");
             headers.put("Accept-Charset", "utf-8");
@@ -169,10 +164,10 @@ public final class PostRequest {
 
     }
 
-    public void sendPost() {
+    void sendPost() throws IllegalArgumentException{
         if (mUserName == null || mUserPass == null) {
             setResponse(resources.getString(R.string.PostRequest_Not_Enough_Parameters));
-            return;
+            throw new IllegalArgumentException(getLastResponse());
         }
 
         CustomStringRequest customStringRequest =

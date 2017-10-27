@@ -22,4 +22,5 @@
     <string name="Login_Service_Label">Login Service</string>
     <string name="Login_Service_Processing">Login Service Processing</string>
     <string name="Captive_Portal_Welcome">I was called!</string>
+    <string name="ERROR_CAPTIVE_PORTAL_LOGIN">Error on captive portal login:</string>
 </resources>

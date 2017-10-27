@@ -1,39 +1,34 @@
 package br.edu.ifsp.wifiautologin;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class LoginInfoActivity extends AppCompatActivity {
+    private static final String TAG = "LoginInfoActivity";
 
     private TextView inputUser = null;
     private TextView inputPassword = null;
     private TextView textResponse = null;
-    private Document doc = null;
     private static String PREFS_NAME = "walprefs";
-
-    private CaptivePortalReceiver cpreceiver = new CaptivePortalReceiver();
 
     private View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
@@ -42,70 +37,22 @@ public class LoginInfoActivity extends AppCompatActivity {
         }
     };
 
+    private PostRequest.OnResponseReceivedListener mRRListener = new PostRequest.OnResponseReceivedListener() {
+        @Override
+        public void onResponseReceived(String response) {
+            textResponse.setText(response);
+        }
+    };
+
     private void sendPostRequest(final String login, final String password) {
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        final StringRequest stringRequest = new StringRequest(
-                Request.Method.POST,
-                getString(R.string.Login_url),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        textResponse.setText(R.string.Progress_Status_connecting + "\n");
-                        doc = Jsoup.parse(response);
-                        Elements errors = doc.select(".error_message");
-                        if (errors.isEmpty()) {
-                            Elements table_trs = doc.select("table.ss_table tr");
-                            StringBuilder sb = new StringBuilder(255);
-                            Element td = null;
-                            for (Element tr : table_trs) {
-                                td = tr.children().first();
-                                sb.append(td.text() + td.nextElementSibling().text());
-                                sb.append("\n");
-                            }
-                            textResponse.setText(sb.toString());
-                        } else {
-                            textResponse.setText(errors.first().text());
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        textResponse.setText(error.getMessage());
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-
-                params.put("login", login);
-                params.put("password", password);
-
-                return params;
+        try {
+            if (makeWifiAvailable()) {
+                PostRequest postRequest = new PostRequest(login, password, mRRListener);
+                postRequest.sendPost();
             }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-
-                headers.put("Accept", "text/html");
-                headers.put("Accept-Charset", "utf-8");
-                headers.put("Content-Type", "application/x-www-form-urlencoded");
-
-                return headers;
-            }
-
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String parsed;
-                parsed = new String(response.data, Charset.defaultCharset());
-                return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
-            }
-        };
-
-        queue.add(stringRequest);
+        } catch (Exception e) {
+            Log.d(TAG, getString(R.string.ERROR_CAPTIVE_PORTAL_LOGIN) + e.getLocalizedMessage(), e);
+        }
     }
 
     private void updateSettings() {
@@ -113,7 +60,7 @@ public class LoginInfoActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.prefs_user), inputUser.getText().toString());
         editor.putString(getString(R.string.prefs_pass), inputPassword.getText().toString());
-        editor.commit();
+        editor.apply();
     }
 
     private void readSettings() {
@@ -150,8 +97,40 @@ public class LoginInfoActivity extends AppCompatActivity {
 
         assignViewListeners();
         readSettings();
-//        Intent loginService = new Intent(this, LoginService.class);
-//        Toast.makeText(this, "Iniciando Serviço!", Toast.LENGTH_LONG).show();
-//        startService(loginService);
+    }
+
+    private boolean makeWifiAvailable() {
+        boolean available = false;
+
+        ConnectivityManager cm = getSystemService(ConnectivityManager.class);
+
+        ArrayList<Network> wifiNetworks = getWifiNetworks(cm);
+
+        if(wifiNetworks.isEmpty()) return false;
+
+        for (Network net: wifiNetworks) {
+            NetworkCapabilities netCaps = cm != null ? cm.getNetworkCapabilities(net) : null;
+            if (netCaps != null &&
+                    netCaps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)) {
+                cm.bindProcessToNetwork(net);
+                available = true;
+            }
+        }
+
+        return available;
+    }
+
+    private ArrayList<Network> getWifiNetworks(ConnectivityManager cm) {
+        ArrayList<Network> networks = new ArrayList<>();
+        NetworkInfo netInfo;
+
+        for (Network net: cm.getAllNetworks()) {
+            netInfo = cm.getNetworkInfo(net);
+            if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                networks.add(net);
+            }
+        }
+
+        return networks;
     }
 }
