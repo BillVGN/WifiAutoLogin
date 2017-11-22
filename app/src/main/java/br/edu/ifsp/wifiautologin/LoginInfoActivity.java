@@ -28,7 +28,7 @@ public class LoginInfoActivity extends AppCompatActivity {
     private TextView inputUser = null;
     private TextView inputPassword = null;
     private TextView textResponse = null;
-    private static String PREFS_NAME = "walprefs";
+    public static String PREFS_NAME = "walprefs";
 
     private View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
