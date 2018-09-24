@@ -32,6 +32,7 @@
         android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="@string/Input_User_placeholder"
+        android:autofillHints="user"
         android:inputType="textPersonName"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textLoginInfoTitle" />
@@ -44,7 +45,6 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:layout_marginTop="32dp"
         app:layout_constraintTop_toBottomOf="@+id/textIntroText"
-        android:layout_marginLeft="17dp"
         android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent" />
 
@@ -55,6 +55,7 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:hint="@string/Input_Password_placeholder"
+        android:autofillHints="password"
         android:inputType="textPassword"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8dp"
