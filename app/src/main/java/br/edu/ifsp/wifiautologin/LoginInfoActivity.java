@@ -1,26 +1,23 @@
 package br.edu.ifsp.wifiautologin;
 
-import android.content.Context;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
+import android.net.NetworkRequest;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+
+import static android.net.ConnectivityManager.*;
 
 public class LoginInfoActivity extends AppCompatActivity {
     private static final String TAG = "LoginInfoActivity";
@@ -94,9 +91,24 @@ public class LoginInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_info);
-
+        boolean captive = getIntent().getBooleanExtra("captive", false);
         assignViewListeners();
         readSettings();
+        if (!captive) {
+            setNetworkCallback();
+        }
+    }
+
+    private void setNetworkCallback() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        Intent intent = new Intent(this, LoginInfoActivity.class);
+        intent.putExtra("captive", true);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NetworkRequest networkRequest = new NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)
+                .build();
+        cm.registerNetworkCallback(networkRequest,pendingIntent);
     }
 
     private boolean makeWifiAvailable() {
@@ -126,7 +138,7 @@ public class LoginInfoActivity extends AppCompatActivity {
 
         for (Network net: cm.getAllNetworks()) {
             netInfo = cm.getNetworkInfo(net);
-            if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            if (netInfo != null && netInfo.getType() == TYPE_WIFI) {
                 networks.add(net);
             }
         }

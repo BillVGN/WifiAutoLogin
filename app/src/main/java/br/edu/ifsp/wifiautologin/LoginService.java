@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 public class LoginService extends Service {
     private static final String TAG = "LoginService";
