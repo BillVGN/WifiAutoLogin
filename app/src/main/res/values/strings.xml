@@ -23,4 +23,6 @@
     <string name="Login_Service_Processing">Login Service Processing</string>
     <string name="Captive_Portal_Welcome">I was called!</string>
     <string name="ERROR_CAPTIVE_PORTAL_LOGIN">Error on captive portal login:</string>
+    <string name="WifiAutoLogin">Wifi Auto Login</string>
+    <string name="Login_Service_Stop">Stop</string>
 </resources>
